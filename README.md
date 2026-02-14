@@ -175,7 +175,7 @@ Agent Harness는 개별 세션의 **"품질"** 을 보장하고, Ralph Loop는 �
 > *"Ralph는 결정론적으로 나쁘다, 비결정론적 세계에서. Ralph의 실패는 예측 가능한 패턴을 따르며, 이 한계의 예측 가능성이야말로 유용한 이유다."* — Geoffrey Huntley
 
 가장 강력한 활용은 이 두 개념을 **의도적으로 분리하되 함께 사용하는 것**입니다.<br/>
-Agent Harness 안에서 Ralph를 구현하면 fresh context라는 핵심 원칙이 깨지고, Ralph 없이 Harness만 사용하면 장기 작업에서 context rot와 조기 완료 선언이라는 실패 모드에 빠집니다. 둘의 올바른 결합이 신뢰할 수 있는 장기 자율 AI 작업의 열쇠입니다.
+Agent Harness 안에서 Ralph를 구현하면 Fresh Context라는 핵심 원칙이 깨지고, Ralph 없이 Harness만 사용하면 장기 작업에서 컨텍스트 부패와 조기 완료 선언이라는 실패 모드에 빠집니다. 둘의 올바른 결합이 신뢰할 수 있는 장기 자율 AI 작업의 핵심 요소입니다.
 
 ### References
 - [1] What is an agent harness in the context of large-language models? https://parallel.ai/articles/what-is-an-agent-harness
@@ -302,11 +302,13 @@ Python 에이전트에 최적화되어 있으며, 세션 관리·메모리·스�
 
 에이전트의 두뇌 역할을 하는 모델 선택입니다. Google Cloud에서는 **Model Routing** 전략을 권장합니다.
 
-| 모델 | 입력 가격 ($/1M tokens) | 출력 가격 ($/1M tokens) | 추천 용도 |
+| 모델 | 입력 토큰 ($/1M tokens) | 출력 토큰 ($/1M tokens) | 추천 용도 |
 |------|----------------------|----------------------|----------|
-| **Gemini 2.5 Pro** | $1.25 (≤200K) / $2.25 (>200K) | $10 / $15 | 복잡한 추론, 멀티스텝 계획 |
-| **Gemini 2.5 Flash** | $0.30 | $2.5 / $2.5 | 일반 작업, 비용 최적화 |
-| **Open Models** (Gemma 등) | Cloud Run/GKE 컴퓨트 비용 | - | 데이터 레지던시, 커스텀 파인튜닝 |
+| **Gemini 3 Pro** | $2 (≤200K) / $4 (>200K) | $12 (≤200K) / $18 (>200K) | 복잡한 추론, 멀티스텝 계획 |
+| **Gemini 3 Flash** | $0.50 | $3 | 일반 작업, 비용 최적화 |
+| **Gemini 2.5 Pro** | $1.25 (≤200K) / $2.25 (>200K) | $10 (≤200K) / $15 (>200K) | 복잡한 추론, 멀티스텝 계획 |
+| **Gemini 2.5 Flash** | $0.30 | $2.5 | 일반 작업, 비용 최적화 |
+| **Open Models** (Gemma 등) | Cloud Run/GKE 컴퓨트 비용 | - | Data Regidency, Custom Fine-tuning |
 [Cost of building and deploying AI models in Vertex AI](https://cloud.google.com/vertex-ai/generative-ai/pricing)
 
 **Model Routing 전략:**
@@ -340,7 +342,7 @@ gcloud run deploy mcp-server \
   --no-allow-unauthenticated
 ```
 
-Agent Engine에 MCP를 배포할 때는 **build-time installation** 패턴을 사용합니다. 커스텀 설치 스크립트로 빌드 시점에 MCP 서버 의존성을 컨테이너 이미지에 포함시킵니다.
+Agent Engine에 MCP를 배포할 때는 **Build-Time Installation** 패턴을 사용합니다. 커스텀 설치 스크립트로 빌드 시점에 MCP 서버 의존성을 컨테이너 이미지에 포함시킵니다.
 
 ### (C) Apigee API Hub
 대규모 엔터프라이즈에서 수많은 API 기반 도구를 관리할 때 사용합니다. 인증, 레이트 리미팅, 모니터링을 중앙에서 관리합니다.
@@ -370,7 +372,7 @@ Agent Engine에 MCP를 배포할 때는 **build-time installation** 패턴을 �
 | Memorystore (Redis) | 프로덕션 | 초저지연, 캐시 적합 |
 | Agent Engine Sessions | 프로덕션 | Agent Engine에 내장, 관리 불필요 |
 
-**핵심 설계 원칙:** 프로덕션에서는 반드시 **stateless agent application + 외부 상태 저장소** 패턴을 사용합니다. 어떤 인스턴스든 어떤 사용자 요청이든 처리할 수 있어야 합니다.
+**핵심 설계 원칙:** 프로덕션에서는 반드시 **Stateless Agent Application + 외부 상태 저장소** 패턴을 사용합니다. 어떤 인스턴스든 어떤 사용자 요청이든 처리할 수 있어야 합니다.
 
 ### Long-term Memory (장기 메모리)
 
@@ -393,7 +395,7 @@ Agent Harness의 가드레일 역할을 하는 핵심 계층입니다.
 | **GKE Sandbox** | 신뢰할 수 없는 코드 격리 실행 | GKE |
 | **Agent Engine Code Execution** | 안전한 샌드박스 코드 실행 | Agent Engine |
 
-Google은 **결정론적 보안 제어 + 동적 추론 기반 방어**의 결합을 권장하며, 세 가지 핵심 원칙을 제시합니다: **사람의 감독(human oversight), 신중히 정의된 에이전트 자율성, 관측 가능성(observability)**.
+Google은 **결정론적 보안 제어 + 동적 추론 기반 방어**의 결합을 권장하며, 세 가지 핵심 원칙을 제시합니다: **사람의 감독(Human Oversight), 신중히 정의된 에이전트 자율성, 관측 가능성(Observability)**.
 
 ***
 
@@ -407,7 +409,7 @@ Google은 **결정론적 보안 제어 + 동적 추론 기반 방어**의 결합
 | **Agent Engine Dashboard** | 토큰 사용량, 지연 시간, 에러율 실시간 추적 |
 | **Managed Prometheus** (GKE) | 서드파티·커스텀 메트릭 수집 |
 
-ADK에는 **built-in tracing**이 내장되어 있어, 에이전트의 추론 경로와 도구 호출 체인을 시각적으로 디버깅할 수 있습니다.
+ADK에는 **Built-in Tracing**이 내장되어 있어, 에이전트의 추론 경로와 도구 호출 체인을 시각적으로 디버깅할 수 있습니다.
 
 ***
 
@@ -420,7 +422,7 @@ ADK에는 **built-in tracing**이 내장되어 있어, 에이전트의 추론 �
 - **Sequential Pattern**: 에이전트 A → 에이전트 B → 에이전트 C 순차 실행
 - **Iterative Refinement**: 작업 에이전트 → 품질 평가 에이전트 → 프롬프트 개선 → 재시도
 - **Coordinator Pattern**: 코디네이터 에이전트가 전문 서브에이전트에 위임
-- **Human-in-the-Loop**: 중요 결정에서 인간 개입 경로 제공
+- **Human-in-the-Loop(HITL)**: 중요 결정에서 인간 개입 경로 제공
 
 ### 실제 활용 사례 (Google 공식 레퍼런스)
 
