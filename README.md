@@ -566,3 +566,7 @@ Part 1에서 다룬 Ralph Loop를 Agent Harness on Google Cloud와 결합하면 
 - [43] Vertex AI pricing | Google Cloud https://cloud.google.com/vertex-ai/pricing
 - [44] Build and Deploy a Remote MCP Server to Google Cloud Run in ...cloud.google.com › blog › topics › developers-practitioners › build-and-de... https://cloud.google.com/blog/topics/developers-practitioners/build-and-deploy-a-remote-mcp-server-to-google-cloud-run-in-under-10-minutes
 - [45] Standard deployment - Agent Development Kit - Google https://google.github.io/adk-docs/deploy/agent-engine/deploy/
+
+
+## Part 3. Sample Code
+샘플 코드는 [sample-agent-harness-on-gcp](https://github.com/hajekim/sample-agent-harness-on-gcp) 리포지토리에서 참고하세요.
